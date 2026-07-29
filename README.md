@@ -108,3 +108,5 @@ ansible-playbook 00_run_all.yml
 - `05_install_office_software.yml` — installs office software.
 - `06_check_security_settings.yml` — checks/enables the firewall, reports FileVault status.
 - `07_configure_personal_settings.yml` — configures git identity and other post-install settings.
+
+**Note**: Splitting tasks into separate playbooks is effectively a manual, coarse-grained version of Ansible's `tags` feature. For the moment, I am keeping the split structure for simplicity, but might change this in the future.
