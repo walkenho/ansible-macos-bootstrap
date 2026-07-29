@@ -1,0 +1,28 @@
+---
+- name: Install productivity tools on macOS
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  tasks:
+    - name: Install Obsidian via Homebrew Cask
+      community.general.homebrew_cask:
+        name: obsidian
+        state: present
+
+    - name: Install Wispr Flow via Homebrew Cask
+      community.general.homebrew_cask:
+        name: wispr-flow
+        state: present
+
+    - name: Install Dropbox via Homebrew Cask
+      community.general.homebrew_cask:
+        name: dropbox
+        state: present
+
+    - name: Install Claude Code via official installer script  # noqa: command-instead-of-module
+      ansible.builtin.shell: set -o pipefail && curl -fsSL https://claude.ai/install.sh | bash
+      args:
+        executable: /bin/zsh
+        creates: "~/.local/bin/claude"

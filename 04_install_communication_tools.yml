@@ -1,0 +1,12 @@
+---
+- name: Install communication tools on macOS
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  tasks:
+    - name: Install Slack via Homebrew Cask
+      community.general.homebrew_cask:
+        name: slack
+        state: present

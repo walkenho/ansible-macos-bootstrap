@@ -1,0 +1,44 @@
+---
+- name: Check and configure macOS security settings
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  tasks:
+    - name: Check Application Firewall status
+      ansible.builtin.command: /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+      register: firewall_status
+      changed_when: false
+
+    - name: Enable Application Firewall if it is off
+      ansible.builtin.command: /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+      become: true
+      when: "'disabled' in firewall_status.stdout"
+      changed_when: true
+
+    - name: Re-check Application Firewall status
+      ansible.builtin.command: /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+      register: firewall_status
+      changed_when: false
+
+    - name: Report firewall status
+      ansible.builtin.debug:
+        msg: >-
+          {{ firewall_status.stdout }}
+          {{ 'No action needed.' if 'enabled' in firewall_status.stdout
+             else 'Firewall is still disabled. Enable manually via System Settings > Network > Firewall.' }}
+
+    - name: Check FileVault status
+      ansible.builtin.command: fdesetup status
+      register: filevault_status
+      changed_when: false
+
+    - name: Report FileVault status
+      ansible.builtin.debug:
+        msg: >-
+          {{ filevault_status.stdout }}
+          {{ 'No action needed.' if 'On' in filevault_status.stdout
+             else 'FileVault is off. Enable manually via System Settings >
+             Privacy & Security > FileVault, since it generates a recovery
+             key you need to store safely and re-encrypts your disk.' }}

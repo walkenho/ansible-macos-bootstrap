@@ -1,0 +1,34 @@
+---
+- name: Install office software on macOS
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  tasks:
+    # MacTeX needs an interactive sudo prompt (fonts into /usr/local/texlive)
+    # that Ansible can't supply, so this only checks it's installed rather
+    # than installing it.
+    - name: Check whether MacTeX is installed
+      ansible.builtin.command: brew list --cask mactex
+      register: mactex_check
+      failed_when: false
+      changed_when: false
+
+    - name: Warn if MacTeX is missing
+      ansible.builtin.debug:
+        msg: >-
+          WARNING: MacTeX is not installed. Run 'brew install --cask
+          mactex' manually in a terminal, since it needs an interactive
+          sudo prompt Ansible can't supply.
+      when: mactex_check.rc != 0
+
+    - name: Install MacDown 3000 via Homebrew Cask
+      community.general.homebrew_cask:
+        name: macdown-3000
+        state: present
+
+    - name: Install Google Chrome via Homebrew Cask
+      community.general.homebrew_cask:
+        name: google-chrome
+        state: present

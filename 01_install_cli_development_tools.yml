@@ -1,0 +1,59 @@
+---
+- name: Install Python development tools on macOS
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  tasks:
+    - name: Install uv via official installer script  # noqa: command-instead-of-module
+      ansible.builtin.shell: set -o pipefail && curl -LsSf https://astral.sh/uv/install.sh | sh
+      args:
+        executable: /bin/zsh
+        creates: "~/.local/bin/uv"
+      register: uv_install
+
+    # Ensure compinit exists in the zshrc before uv needs it, even if
+    # zshrc does not exist beforehand.
+    - name: Add compinit if not existing yet
+      ansible.builtin.lineinfile:
+        path: "~/.zshrc"
+        line: "autoload -Uz compinit && compinit"
+        insertbefore: "uv generate-shell-completion"
+        create: true
+        mode: "0644"
+
+    - name: Add uv shell autocompletion for zsh
+      ansible.builtin.lineinfile:
+        path: "~/.zshrc"
+        line: 'eval "$(uv generate-shell-completion zsh)"'
+        create: true
+        mode: "0644"
+
+    - name: Install ruff via Homebrew
+      community.general.homebrew:
+        name: ruff
+        state: present
+
+    # Docker Desktop's cask needs sudo to create /usr/local/bin for CLI
+    # symlinks, which Ansible can't supply interactively, so this only
+    # checks it's installed rather than installing it.
+    - name: Check whether Docker Desktop is installed
+      ansible.builtin.command: brew list --cask docker-desktop
+      register: docker_check
+      failed_when: false
+      changed_when: false
+
+    - name: Warn if Docker Desktop is missing
+      ansible.builtin.debug:
+        msg: >-
+          WARNING: Docker Desktop is not installed. Run 'brew install
+          --cask docker-desktop' manually in a terminal, since it needs
+          an interactive sudo prompt Ansible can't supply.
+      when: docker_check.rc != 0
+
+    - name: Install pre-commit via uv
+      ansible.builtin.shell: ~/.local/bin/uv tool install pre-commit --with pre-commit-uv
+      args:
+        executable: /bin/zsh
+        creates: "~/.local/bin/pre-commit"

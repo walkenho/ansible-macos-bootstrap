@@ -1,0 +1,18 @@
+---
+- name: CLI development tools
+  import_playbook: 01_install_cli_development_tools.yml
+
+- name: VS Code and extensions
+  import_playbook: 02_install_and_setup_vscode.yml
+
+- name: Productivity tools
+  import_playbook: 03_install_productivity_tools.yml
+
+- name: Communication tools
+  import_playbook: 04_install_communication_tools.yml
+
+- name: Office software
+  import_playbook: 05_install_office_software.yml
+
+- name: Security settings
+  import_playbook: 06_check_security_settings.yml
