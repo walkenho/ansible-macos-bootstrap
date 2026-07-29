@@ -1,0 +1,19 @@
+---
+- name: Configure personal settings on macOS
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  tasks:
+    - name: Set git user name
+      community.general.git_config:
+        name: user.name
+        scope: global
+        value: "Jessica Walkenhorst"  # TODO: confirm this matches your GitHub display name
+
+    - name: Set git user email
+      community.general.git_config:
+        name: user.email
+        scope: global
+        value: "walkenho@users.noreply.github.com"

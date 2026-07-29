@@ -16,3 +16,6 @@
 
 - name: Security settings
   import_playbook: 06_check_security_settings.yml
+
+- name: Configure personal settings
+  import_playbook: 07_configure_personal_settings.yml
