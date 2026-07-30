@@ -110,3 +110,7 @@ ansible-playbook 00_run_all.yml
 - `07_configure_personal_settings.yml` — configures git identity and other post-install settings.
 
 **Note**: Splitting tasks into separate playbooks is effectively a manual, coarse-grained version of Ansible's `tags` feature. For the moment, I am keeping the split structure for simplicity, but might change this in the future.
+
+## Developing
+
+CI (`.github/workflows/pre-commit.yml`) currently runs on `ubuntu-latest`, since it only lints the playbooks and doesn't execute anything macOS-specific. If CI is ever extended to actually run the playbooks rather than just lint them, the runner would need to be swapped to a macOS image instead.
