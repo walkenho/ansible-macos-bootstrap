@@ -5,47 +5,49 @@
   become: false
 
   tasks:
-    - name: Install VS Code via Homebrew Cask
-      community.general.homebrew_cask:
-        name: visual-studio-code
-        state: present
+    - name: VS Code setup
+      block:
+        - name: Install VS Code via Homebrew Cask
+          community.general.homebrew_cask:
+            name: visual-studio-code
+            state: present
 
-    - name: Verify code CLI is available
-      ansible.builtin.command: which code
-      register: code_cli
-      failed_when: false
-      changed_when: false
+        - name: Verify code CLI is available
+          ansible.builtin.command: which code
+          register: code_cli
+          failed_when: false
+          changed_when: false
 
-    - name: Fail with instructions if code CLI missing
-      ansible.builtin.fail:
-        msg: >-
-          code CLI not found on PATH. The Homebrew cask normally symlinks
-          it automatically; if this fails, open VS Code and run 'Shell
-          Command: Install code command in PATH' from the command
-          palette, then rerun this playbook.
-      when: code_cli.rc != 0
+        - name: Fail with instructions if code CLI missing
+          ansible.builtin.fail:
+            msg: >-
+              code CLI not found on PATH. The Homebrew cask normally symlinks
+              it automatically; if this fails, open VS Code and run 'Shell
+              Command: Install code command in PATH' from the command
+              palette, then rerun this playbook.
+          when: code_cli.rc != 0
 
-    - name: List installed VS Code extensions
-      ansible.builtin.command: code --list-extensions
-      register: vscode_extensions
-      changed_when: false
+        - name: List installed VS Code extensions
+          ansible.builtin.command: code --list-extensions
+          register: vscode_extensions
+          changed_when: false
 
-    - name: Install VS Code Python extension
-      ansible.builtin.command: code --install-extension ms-python.python
-      when: "'ms-python.python' not in vscode_extensions.stdout"
-      changed_when: true
+        - name: Install VS Code Python extension
+          ansible.builtin.command: code --install-extension ms-python.python
+          when: "'ms-python.python' not in vscode_extensions.stdout"
+          changed_when: true
 
-    - name: Install VS Code Ruff extension
-      ansible.builtin.command: code --install-extension charliermarsh.ruff
-      when: "'charliermarsh.ruff' not in vscode_extensions.stdout"
-      changed_when: true
+        - name: Install VS Code Ruff extension
+          ansible.builtin.command: code --install-extension charliermarsh.ruff
+          when: "'charliermarsh.ruff' not in vscode_extensions.stdout"
+          changed_when: true
 
-    - name: Install VS Code Vim extension
-      ansible.builtin.command: code --install-extension vscodevim.vim
-      when: "'vscodevim.vim' not in vscode_extensions.stdout"
-      changed_when: true
+        - name: Install VS Code Vim extension
+          ansible.builtin.command: code --install-extension vscodevim.vim
+          when: "'vscodevim.vim' not in vscode_extensions.stdout"
+          changed_when: true
 
-    - name: Install VS Code Claude Code extension
-      ansible.builtin.command: code --install-extension anthropic.claude-code
-      when: "'anthropic.claude-code' not in vscode_extensions.stdout"
-      changed_when: true
+        - name: Install VS Code Claude Code extension
+          ansible.builtin.command: code --install-extension anthropic.claude-code
+          when: "'anthropic.claude-code' not in vscode_extensions.stdout"
+          changed_when: true

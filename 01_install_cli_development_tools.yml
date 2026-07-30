@@ -6,29 +6,31 @@
   gather_facts: false
 
   tasks:
-    - name: Install uv via official installer script  # noqa: command-instead-of-module
-      ansible.builtin.shell: set -o pipefail && curl -LsSf https://astral.sh/uv/install.sh | sh
-      args:
-        executable: /bin/zsh
-        creates: "~/.local/bin/uv"
-      register: uv_install
+    - name: Install and setup uv
+      block:
+        - name: Install uv via official installer script  # noqa: command-instead-of-module
+          ansible.builtin.shell: set -o pipefail && curl -LsSf https://astral.sh/uv/install.sh | sh
+          args:
+            executable: /bin/zsh
+            creates: "~/.local/bin/uv"
+          register: uv_install
 
-    # Ensure compinit exists in the zshrc before uv needs it, even if
-    # zshrc does not exist beforehand.
-    - name: Add compinit if not existing yet
-      ansible.builtin.lineinfile:
-        path: "~/.zshrc"
-        line: "autoload -Uz compinit && compinit"
-        insertbefore: "uv generate-shell-completion"
-        create: true
-        mode: "0644"
+        # Ensure compinit exists in the zshrc before uv needs it, even if
+        # zshrc does not exist beforehand.
+        - name: Add compinit if not existing yet
+          ansible.builtin.lineinfile:
+            path: "~/.zshrc"
+            line: "autoload -Uz compinit && compinit"
+            insertbefore: "uv generate-shell-completion"
+            create: true
+            mode: "0644"
 
-    - name: Add uv shell autocompletion for zsh
-      ansible.builtin.lineinfile:
-        path: "~/.zshrc"
-        line: 'eval "$(uv generate-shell-completion zsh)"'
-        create: true
-        mode: "0644"
+        - name: Add uv shell autocompletion for zsh
+          ansible.builtin.lineinfile:
+            path: "~/.zshrc"
+            line: 'eval "$(uv generate-shell-completion zsh)"'
+            create: true
+            mode: "0644"
 
     - name: Install ruff via Homebrew
       community.general.homebrew:
