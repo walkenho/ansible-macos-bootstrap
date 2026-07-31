@@ -9,19 +9,18 @@
     # MacTeX needs an interactive sudo prompt (fonts into /usr/local/texlive)
     # that Ansible can't supply, so this only checks it's installed rather
     # than installing it.
-    - name: Check whether MacTeX is installed
-      ansible.builtin.command: brew list --cask mactex
-      register: mactex_check
-      failed_when: false
-      changed_when: false
-
-    - name: Warn if MacTeX is missing
-      ansible.builtin.debug:
-        msg: >-
-          WARNING: MacTeX is not installed. Run 'brew install --cask
-          mactex' manually in a terminal, since it needs an interactive
-          sudo prompt Ansible can't supply.
-      when: mactex_check.rc != 0
+    - name: MacTeX cask check
+      block:
+        - name: Check whether MacTeX is installed
+          ansible.builtin.command: brew list --cask mactex
+          changed_when: false
+      rescue:
+        - name: Warn if MacTeX is missing
+          ansible.builtin.debug:
+            msg: >-
+              WARNING: MacTeX is not installed. Run 'brew install --cask
+              mactex' manually in a terminal, since it needs an interactive
+              sudo prompt Ansible can't supply.
 
     - name: Install MacDown 3000 via Homebrew Cask
       community.general.homebrew_cask:

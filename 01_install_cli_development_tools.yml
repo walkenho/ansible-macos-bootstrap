@@ -40,19 +40,18 @@
     # Docker Desktop's cask needs sudo to create /usr/local/bin for CLI
     # symlinks, which Ansible can't supply interactively, so this only
     # checks it's installed rather than installing it.
-    - name: Check whether Docker Desktop is installed
-      ansible.builtin.command: brew list --cask docker-desktop
-      register: docker_check
-      failed_when: false
-      changed_when: false
-
-    - name: Warn if Docker Desktop is missing
-      ansible.builtin.debug:
-        msg: >-
-          WARNING: Docker Desktop is not installed. Run 'brew install
-          --cask docker-desktop' manually in a terminal, since it needs
-          an interactive sudo prompt Ansible can't supply.
-      when: docker_check.rc != 0
+    - name: Docker Desktop cask check
+      block:
+        - name: Check whether Docker Desktop is installed
+          ansible.builtin.command: brew list --cask docker-desktop
+          changed_when: false
+      rescue:
+        - name: Warn if Docker Desktop is missing
+          ansible.builtin.debug:
+            msg: >-
+              WARNING: Docker Desktop is not installed. Run 'brew install
+              --cask docker-desktop' manually in a terminal, since it needs
+              an interactive sudo prompt Ansible can't supply.
 
     - name: Install pre-commit via uv
       ansible.builtin.shell: ~/.local/bin/uv tool install pre-commit --with pre-commit-uv
