@@ -27,11 +27,6 @@
         name: macdown-3000
         state: present
 
-    - name: Install Google Chrome via Homebrew Cask
-      community.general.homebrew_cask:
-        name: google-chrome
-        state: absent
-
     - name: Install LibreOffice via Homebrew Cask
       community.general.homebrew_cask:
         name: libreoffice
