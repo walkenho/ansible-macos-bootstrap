@@ -31,3 +31,8 @@
       community.general.homebrew_cask:
         name: google-chrome
         state: present
+
+    - name: Install LibreOffice via Homebrew Cask
+      community.general.homebrew_cask:
+        name: libreoffice
+        state: present
