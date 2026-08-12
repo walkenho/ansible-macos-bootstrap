@@ -26,3 +26,9 @@
       args:
         executable: /bin/zsh
         creates: "~/.local/bin/claude"
+
+
+    - name: Install Zotero via Homebrew Cask
+      community.general.homebrew_cask:
+        name: zotero
+        state: present
