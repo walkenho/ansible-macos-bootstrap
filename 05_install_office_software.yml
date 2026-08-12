@@ -30,9 +30,14 @@
     - name: Install Google Chrome via Homebrew Cask
       community.general.homebrew_cask:
         name: google-chrome
-        state: present
+        state: absent
 
     - name: Install LibreOffice via Homebrew Cask
       community.general.homebrew_cask:
         name: libreoffice
+        state: present
+
+    - name: Install Firefox via Homebrew Cask
+      community.general.homebrew_cask:
+        name: firefox
         state: present
