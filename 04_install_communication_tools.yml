@@ -10,3 +10,17 @@
       community.general.homebrew_cask:
         name: slack
         state: present
+    # Zoom's cask needs an interactive sudo prompt
+    # that Ansible can't supply, so this only checks it's installed.
+    - name: Zoom cask check
+      block:
+        - name: Check whether Zoom is installed
+          ansible.builtin.command: brew list --cask zoom
+          changed_when: false
+      rescue:
+        - name: Warn if Zoom is missing
+          ansible.builtin.debug:
+            msg: >-
+              WARNING: Zoom is not installed. Run 'brew install --cask
+              zoom' manually in a terminal, since it needs an interactive
+              sudo prompt Ansible can't supply.
